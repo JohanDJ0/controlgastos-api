@@ -6,6 +6,15 @@ import budgetRoutes from "./routes/budget.routes.js";
 import savingRoutes from './routes/savings.routes.js'
 const app = express();
 
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
+
 app.use(express.json());
 
 app.use(indexRoutes);
