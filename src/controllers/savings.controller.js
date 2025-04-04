@@ -1,34 +1,38 @@
 import { pool } from "../db.js";
 
 export const createSavings = async (req, res) => {
-    try {
-      const { amount, description } = req.body;
-      const user_id = req.user.id;  // Asegúrate de que el `user_id` venga del token o sesión autenticada
-  
-      if (!amount) {
-        return res.status(400).json({ message: "El monto es requerido" });
-      }
-  
-      // Crear el apartado de ahorro
-      const [rows] = await pool.query(
-        "INSERT INTO savings (user_id, amount, description) VALUES (?, ?, ?)",
-        [user_id, amount, description]
-      );
-  
-      res.status(201).json({
-        id: rows.insertId,
-        user_id,
-        amount,
-        description,
-      });
-    } catch (error) {
-      console.error("Error en createSavings:", error);
-      return res.status(500).json({
-        message: "Something went wrong",
-        error: error.message,
-      });
+  try {
+    const { user_id, amount, description } = req.body;  // Ahora obtenemos user_id de req.body
+
+    if (!user_id) {
+      return res.status(400).json({ message: "El user_id es requerido" });
     }
-  };
+
+    if (!amount) {
+      return res.status(400).json({ message: "El monto es requerido" });
+    }
+
+    // Crear el apartado de ahorro
+    const [rows] = await pool.query(
+      "INSERT INTO savings (user_id, amount, description) VALUES (?, ?, ?)",
+      [user_id, amount, description]
+    );
+
+    res.status(201).json({
+      id: rows.insertId,
+      user_id,
+      amount,
+      description,
+    });
+  } catch (error) {
+    console.error("Error en createSavings:", error);
+    return res.status(500).json({
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
+
   
 
   export const addSavingsTransaction = async (req, res) => {
