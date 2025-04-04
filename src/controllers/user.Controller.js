@@ -39,6 +39,49 @@ export const createUser = async (req, res) => {
 };
 
 
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email y contraseña son requeridos" });
+    }
+
+    // Buscar al usuario por email
+    const [users] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: "El usuario no existe" });
+    }
+
+    const user = users[0];
+
+    // Comparar la contraseña encriptada
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Contraseña incorrecta" });
+    }
+
+    // Puedes generar un token aquí si usas JWT
+    res.json({
+      message: "Login exitoso",
+      user: {
+        id: user.id,
+        email: user.email,
+        created_at: user.created_at
+      }
+    });
+  } catch (error) {
+    console.error("Error en loginUser:", error);
+    res.status(500).json({
+      message: "Error del servidor",
+      error: error.message,
+    });
+  }
+};
+
+
 // Obtener todos los usuarios
 export const getUsers = async (req, res) => {
     try {
