@@ -2,13 +2,9 @@ CREATE DATABASE IF NOT EXISTS controlgastosdb;
 
 use controlgastosdb;
 
-CREATE TABLE user(
-    id INT(11) NOT NULL AUTO_INCREMENT,
-    name VARCHAR(45) DEFAULT NULL,
-    salary INT(5) DEFAULT NULL,
-    PRIMARY KEY (id)
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-INSERT INTO user VALUES
-    (1, 'Joe', 1000),
-    (2, 'Henry', 2000);
