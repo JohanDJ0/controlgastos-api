@@ -28,3 +28,21 @@ export const createBudget = async (req, res) => {
     });
   }
 };
+
+
+export const getBudgetsByUserId = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    if (!user_id) {
+      return res.status(400).json({ message: "El user_id es requerido" });
+    }
+
+    const [rows] = await pool.query("SELECT * FROM budgets WHERE user_id = ?", [user_id]);
+
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ message: "Algo salió mal", error: error.message });
+  }
+};
+
