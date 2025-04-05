@@ -46,3 +46,40 @@ export const getBudgetsByUserId = async (req, res) => {
   }
 };
 
+export const updateBudgetByUserId = async (req, res) => {
+  try {
+    const { user_id, budget_id } = req.params;
+    const { amount } = req.body;
+
+    if (!amount) {
+      return res.status(400).json({ message: "El monto es requerido para actualizar" });
+    }
+
+    // Verificar si el presupuesto existe y pertenece al usuario
+    const [existing] = await pool.query(
+      "SELECT * FROM budgets WHERE id = ? AND user_id = ?",
+      [budget_id, user_id]
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Presupuesto no encontrado para este usuario" });
+    }
+
+    // Actualizar presupuesto
+    await pool.query("UPDATE budgets SET amount = ? WHERE id = ? AND user_id = ?", [
+      amount,
+      budget_id,
+      user_id,
+    ]);
+
+    res.json({
+      message: "Presupuesto actualizado correctamente",
+      budget_id,
+      user_id,
+      amount,
+    });
+  } catch (error) {
+    console.error("Error en updateBudgetByUserId:", error);
+    res.status(500).json({ message: "Algo salió mal", error: error.message });
+  }
+};
